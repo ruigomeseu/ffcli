@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.fireflies.ai)",
+      "WebFetch(domain:bun.com)",
+      "Bash(bun run:*)",
+      "Bash(bun run test:*)"
+    ]
+  }
+}

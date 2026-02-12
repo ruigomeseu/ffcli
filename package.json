@@ -1,0 +1,35 @@
+{
+  "name": "ffcli",
+  "version": "0.1.0",
+  "description": "Fireflies.ai CLI — query meeting data from the command line",
+  "module": "src/index.ts",
+  "type": "module",
+  "bin": {
+    "ffcli": "src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run tests/unit",
+    "test:e2e": "vitest run tests/e2e",
+    "test:all": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "build": "bun build --compile src/index.ts --outfile ffcli"
+  },
+  "keywords": ["fireflies", "meetings", "transcripts", "cli"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruigomeseu/ffcli.git"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "vitest": "^4.0.18"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "commander": "^14.0.3",
+    "graphql": "^16.12.0",
+    "graphql-request": "^7.4.0"
+  }
+}
