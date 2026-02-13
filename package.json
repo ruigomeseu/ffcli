@@ -1,6 +1,6 @@
 {
   "name": "@ruigomeseu/ffcli",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Fireflies.ai CLI — query meeting data from the command line",
   "type": "module",
   "bin": {
@@ -14,7 +14,7 @@
     "test:e2e": "vitest run tests/e2e",
     "test:all": "vitest run",
     "typecheck": "tsc --noEmit",
-    "build": "bun build --compile src/index.ts --outfile ffcli",
+    "build": "bun build --compile --minify --bytecode --sourcemap src/index.ts --outfile ffcli",
     "build:npm": "bun build src/index.ts --outfile dist/index.js --target node --banner \"#!/usr/bin/env node\"",
     "prepublishOnly": "bun run build:npm"
   },
