@@ -21,7 +21,7 @@ brew install ruigomeseu/tap/ffcli
 ### npm
 
 ```bash
-npm install -g ffcli
+npm install -g @ruigomeseu/ffcli
 ```
 
 ### Download binary
@@ -251,4 +251,4 @@ MIT
 ## Links
 
 - [GitHub Repository](https://github.com/ruigomeseu/ffcli)
-- [npm Package](https://www.npmjs.com/package/ffcli)
+- [npm Package](https://www.npmjs.com/package/@ruigomeseu/ffcli)

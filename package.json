@@ -1,5 +1,5 @@
 {
-  "name": "ffcli",
+  "name": "@ruigomeseu/ffcli",
   "version": "0.1.0",
   "description": "Fireflies.ai CLI — query meeting data from the command line",
   "module": "src/index.ts",
