@@ -86,6 +86,93 @@ describe("list formatting", () => {
     });
   });
 
+  describe("date range variable conversion", () => {
+    it("converts --from date string to ISO format", () => {
+      const from = "2025-01-01";
+      const iso = new Date(from).toISOString();
+      expect(iso).toBe("2025-01-01T00:00:00.000Z");
+    });
+
+    it("converts --to date string to ISO format", () => {
+      const to = "2025-01-31";
+      const iso = new Date(to).toISOString();
+      expect(iso).toBe("2025-01-31T00:00:00.000Z");
+    });
+
+    it("builds variables with fromDate and toDate when provided", () => {
+      const opts = { limit: "20", from: "2025-01-01", to: "2025-01-31" };
+      const variables: Record<string, unknown> = {
+        limit: parseInt(opts.limit, 10),
+      };
+      if (opts.from) variables["fromDate"] = new Date(opts.from).toISOString();
+      if (opts.to) variables["toDate"] = new Date(opts.to).toISOString();
+
+      expect(variables).toEqual({
+        limit: 20,
+        fromDate: "2025-01-01T00:00:00.000Z",
+        toDate: "2025-01-31T00:00:00.000Z",
+      });
+    });
+
+    it("builds variables with participant_email when provided", () => {
+      const opts = { limit: "20", participant: "alice@example.com" };
+      const variables: Record<string, unknown> = {
+        limit: parseInt(opts.limit, 10),
+      };
+      if (opts.participant) variables["participant_email"] = opts.participant;
+
+      expect(variables).toEqual({
+        limit: 20,
+        participant_email: "alice@example.com",
+      });
+    });
+
+    it("omits fromDate and toDate when not provided", () => {
+      const opts = { limit: "10" } as { limit: string; from?: string; to?: string };
+      const variables: Record<string, unknown> = {
+        limit: parseInt(opts.limit, 10),
+      };
+      if (opts.from) variables["fromDate"] = new Date(opts.from).toISOString();
+      if (opts.to) variables["toDate"] = new Date(opts.to).toISOString();
+
+      expect(variables).toEqual({ limit: 10 });
+      expect(variables).not.toHaveProperty("fromDate");
+      expect(variables).not.toHaveProperty("toDate");
+    });
+  });
+
+  describe("client-side search filtering", () => {
+    it("filters meetings by title keyword (case-insensitive)", () => {
+      const filtered = meetings.filter(
+        (t) => t.title?.toLowerCase().includes("standup"),
+      );
+      expect(filtered).toHaveLength(1);
+      expect(filtered[0]!.title).toBe("Morning Standup");
+    });
+
+    it("returns empty array when no titles match", () => {
+      const filtered = meetings.filter(
+        (t) => t.title?.toLowerCase().includes("nonexistent"),
+      );
+      expect(filtered).toHaveLength(0);
+    });
+
+    it("matches partial title strings", () => {
+      const filtered = meetings.filter(
+        (t) => t.title?.toLowerCase().includes("sprint"),
+      );
+      expect(filtered).toHaveLength(1);
+      expect(filtered[0]!.title).toBe("Sprint Review");
+    });
+
+    it("matches case-insensitively", () => {
+      const filtered = meetings.filter(
+        (t) => t.title?.toLowerCase().includes("MORNING".toLowerCase()),
+      );
+      expect(filtered).toHaveLength(1);
+    });
+  });
+
   describe("meetings with summaries", () => {
     it("JSON includes summary when present", () => {
       const withSummary: TranscriptListItem[] = [

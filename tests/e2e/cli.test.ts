@@ -59,6 +59,59 @@ describe.runIf(hasApiKey)("e2e: list", () => {
       expect(meetings[0]).toHaveProperty("summary");
     }
   }, TEST_TIMEOUT);
+
+  it("list --from and --to filters by date range", () => {
+    // Use the last 30 days as a reasonable range
+    const to = new Date();
+    const from = new Date(to.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const fromStr = from.toISOString().split("T")[0];
+    const toStr = to.toISOString().split("T")[0];
+    const result = run(`list --limit 3 --from ${fromStr} --to ${toStr}`);
+    const meetings = JSON.parse(result);
+    expect(Array.isArray(meetings)).toBe(true);
+  }, TEST_TIMEOUT);
+
+  it("list --from and --to with narrow range returns fewer results", () => {
+    // A date range far in the past should return no meetings
+    const result = run("list --limit 5 --from 2000-01-01 --to 2000-01-02");
+    const meetings = JSON.parse(result);
+    expect(Array.isArray(meetings)).toBe(true);
+    expect(meetings.length).toBe(0);
+  }, TEST_TIMEOUT);
+
+  it("list --participant filters by participant email", () => {
+    // First get a meeting to find a real participant
+    const listResult = run("list --limit 1");
+    const meetings = JSON.parse(listResult);
+    if (meetings.length === 0) return;
+    const participant = meetings[0].participants?.[0] ?? meetings[0].organizer_email;
+    if (!participant) return;
+
+    const result = run(`list --limit 5 --participant ${participant}`);
+    const filtered = JSON.parse(result);
+    expect(Array.isArray(filtered)).toBe(true);
+    for (const m of filtered) {
+      expect(m.participants).toContain(participant);
+    }
+  }, TEST_TIMEOUT);
+
+  it("list --search filters meetings by title keyword", () => {
+    // First get a meeting to extract a keyword from its title
+    const listResult = run("list --limit 1");
+    const meetings = JSON.parse(listResult);
+    if (meetings.length === 0 || !meetings[0].title) return;
+
+    // Use the first word of the title as search term
+    const keyword = meetings[0].title.split(/\s+/)[0];
+    if (!keyword) return;
+
+    const result = run(`list --limit 20 --search "${keyword}"`);
+    const filtered = JSON.parse(result);
+    expect(Array.isArray(filtered)).toBe(true);
+    for (const m of filtered) {
+      expect(m.title.toLowerCase()).toContain(keyword.toLowerCase());
+    }
+  }, TEST_TIMEOUT);
 });
 
 describe.runIf(hasApiKey)("e2e: show", () => {
@@ -109,5 +162,20 @@ describe.runIf(hasApiKey)("e2e: show", () => {
     const transcript = JSON.parse(result);
     expect(transcript).not.toHaveProperty("summary");
     expect(transcript).toHaveProperty("sentences");
+  }, TEST_TIMEOUT);
+
+  it("show <id> --summary-only --md returns markdown without transcript section", () => {
+    const result = run(`show ${meetingId} --summary-only --md`);
+    expect(result).toMatch(/^---\n/);
+    expect(result).toContain("source: fireflies");
+    expect(result).not.toContain("## Transcript");
+  }, TEST_TIMEOUT);
+
+  it("show <id> --transcript-only --md returns markdown without summary sections", () => {
+    const result = run(`show ${meetingId} --transcript-only --md`);
+    expect(result).toMatch(/^---\n/);
+    expect(result).not.toContain("## Overview");
+    expect(result).not.toContain("## Action Items");
+    expect(result).toContain("## Transcript");
   }, TEST_TIMEOUT);
 });
