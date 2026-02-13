@@ -48,15 +48,7 @@ export function formatListMarkdown(meetings: TranscriptListItem[]): string {
 
 function formatDate(dateString: string): string {
   try {
-    const d = new Date(dateString);
-    return d.toLocaleString("en-US", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
+    return new Date(dateString).toISOString();
   } catch {
     return dateString;
   }
