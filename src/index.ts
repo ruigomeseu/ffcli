@@ -9,7 +9,7 @@ const program = new Command();
 program
   .name("ffcli")
   .description("Fireflies.ai CLI — query meeting data from the command line")
-  .version("0.1.0");
+  .version("0.1.1");
 
 registerAuthCommand(program);
 registerMeCommand(program);

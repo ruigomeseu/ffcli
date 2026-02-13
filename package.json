@@ -1,18 +1,22 @@
 {
   "name": "@ruigomeseu/ffcli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Fireflies.ai CLI — query meeting data from the command line",
-  "module": "src/index.ts",
   "type": "module",
   "bin": {
-    "ffcli": "src/index.ts"
+    "ffcli": "dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "vitest run tests/unit",
     "test:e2e": "vitest run tests/e2e",
     "test:all": "vitest run",
     "typecheck": "tsc --noEmit",
-    "build": "bun build --compile src/index.ts --outfile ffcli"
+    "build": "bun build --compile src/index.ts --outfile ffcli",
+    "build:npm": "bun build src/index.ts --outfile dist/index.js --target node --banner \"#!/usr/bin/env node\"",
+    "prepublishOnly": "bun run build:npm"
   },
   "keywords": ["fireflies", "meetings", "transcripts", "cli"],
   "license": "MIT",
